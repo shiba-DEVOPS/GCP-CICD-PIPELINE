@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Corporate dashboard for associates, managers, and HR executives.">
+    <title>Corporate Portal</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="dashboard-page">
+    <header class="hero-panel">
+        <div class="header-container">
+            <div class="hero-copy">
+                <div class="corporate-logo">
+                    <div class="logo-icon">💠</div>
+                    <span>Secure Apex</span>
+                </div>
+                <h2 id="portalTitle">Executive Command Center</h2>
+            </div>
+
+            <div id="currentUserBadge" class="role-badge">Session Active</div>
+
+            <button type="button" id="logoutButton" class="danger-button">Terminate Session</button>
+        </div>
+    </header>
+
+    <main id="dashboardRoot" class="dashboard-shell">
+        <div id="globalFeedback" class="alert hidden"></div>
+
+        <section class="panel">
+            <div class="feature-grid">
+                <article class="info-card">
+                    <h3>User Profile</h3>
+                    <div id="currentUserSummary" class="summary-grid"></div>
+                </article>
+
+                <article class="info-card">
+                    <h3>Synchronize Details</h3>
+                    <form id="selfDetailsForm" class="entry-form compact-form">
+                        <div class="field-grid">
+                            <div>
+                                <label for="selfJobTitle">Designation</label>
+                                <select id="selfJobTitle" name="jobTitle">
+                                    <option value="">Select Designation</option>
+                                    <option value="Software Developer">Software Developer</option>
+                                    <option value="Senior Software Developer">Senior Software Developer</option>
+                                    <option value="Project Manager">Project Manager</option>
+                                    <option value="HR Manager">HR Manager</option>
+                                    <option value="Sales Representative">Sales Representative</option>
+                                    <option value="Sales Manager">Sales Manager</option>
+                                    <option value="QA Engineer">QA Engineer</option>
+                                    <option value="Marketing Specialist">Marketing Specialist</option>
+                                    <option value="Marketing Manager">Marketing Manager</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="selfNationality">Region</label>
+                                <input type="text" id="selfNationality" name="nationality" placeholder="Region/Country">
+                            </div>
+                        </div>
+                        <div class="field-grid">
+                            <div>
+                                <label for="selfSalary">Remuneration</label>
+                                <input type="number" id="selfSalary" name="salary" placeholder="Annual Figure">
+                            </div>
+                            <div>
+                                <label for="selfAge">Age Record</label>
+                                <input type="number" id="selfAge" name="age" placeholder="Age">
+                            </div>
+                        </div>
+                        <div class="field-grid">
+                            <div>
+                                <label for="selfBloodGroup">Medical Group</label>
+                                <select id="selfBloodGroup" name="bloodGroup">
+                                    <option value="">N/A</option>
+                                    <option value="A+">A+</option><option value="A-">A-</option>
+                                    <option value="B+">B+</option><option value="B-">B-</option>
+                                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                    <option value="O+">O+</option><option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="selfMobileNumber">Contact Number</label>
+                                <input type="text" id="selfMobileNumber" name="mobileNumber" placeholder="Primary Contact">
+                            </div>
+                        </div>
+                        <button type="submit">Update Records</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+
+        <section id="directorySection" class="panel hidden">
+            <div class="table-card">
+                <h3 id="directoryTitle" style="margin-bottom: 15px;">Corporate Directory Management</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Identity</th><th>Email</th><th>Designation</th><th>Region</th><th>Status</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody">
+                        <tr><td colspan="7" class="empty-state">No directory records synchronized.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Administrative Edit Overlay -->
+        <div id="adminEditOverlay" class="modal hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Administrative Record Correction</h3>
+                    <button type="button" class="ghost-button" data-action="close-admin">Close</button>
+                </div>
+                <form id="adminEditForm" class="entry-form compact-form">
+                    <input type="hidden" id="editUserId">
+                    <div class="field-grid">
+                        <div>
+                            <label for="editName">Full Name</label>
+                            <input type="text" id="editName" required>
+                        </div>
+                        <div>
+                            <label for="editEmail">Official Email</label>
+                            <input type="email" id="editEmail" required>
+                        </div>
+                    </div>
+                    <div class="field-grid">
+                        <div>
+                            <label for="editDesignation">Designation</label>
+                            <select id="editDesignation">
+                                <option value="">Select Designation</option>
+                                <option value="Software Developer">Software Developer</option>
+                                <option value="Senior Software Developer">Senior Software Developer</option>
+                                <option value="Project Manager">Project Manager</option>
+                                <option value="HR Manager">HR Manager</option>
+                                <option value="Sales Representative">Sales Representative</option>
+                                <option value="Sales Manager">Sales Manager</option>
+                                <option value="QA Engineer">QA Engineer</option>
+                                <option value="Marketing Specialist">Marketing Specialist</option>
+                                <option value="Marketing Manager">Marketing Manager</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="editRegion">Region</label>
+                            <input type="text" id="editRegion">
+                        </div>
+                    </div>
+                    <button type="submit" style="margin-top: 15px;">Commit Changes</button>
+                </form>
+            </div>
+        </div>
+        <section id="attendanceSection" class="panel hidden">
+            <div class="table-card">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 24px;">📋</div>
+                    <h3>Attendance Intelligence & Log Reports</h3>
+                </div>
+                <div id="attendanceControls" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <!-- Filter buttons injected by JS -->
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Identity</th><th>Department</th><th>Timestamp</th><th>Status</th><th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <tr><td colspan="5" class="empty-state">No attendance records synchronized.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Secure Maintenance Zone (HR/CEO Only) -->
+        <div id="maintenanceZone" class="hidden" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+            <p class="eyebrow" style="color: var(--danger);">Maintenance Control</p>
+            <div style="display: flex; gap: 15px;">
+                <button type="button" class="danger-button" style="width: auto;" onclick="systemReset()">Emergency System Wipe</button>
+                <button type="button" class="secondary-button" style="width: auto; background: var(--accent); color: var(--bg-deep);" id="backupTrigger" onclick="forceOpenBackup()">Backup System</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Backup Modal -->
+    <div id="backupModal" class="modal hidden">
+        <div class="modal-card" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>System Backup Control</h3>
+                <button type="button" class="ghost-button" id="closeBackup">Close</button>
+            </div>
+
+            <div id="backupSelection">
+                <p class="helper-text" style="margin-bottom: 20px;">Choose your preferred backup destination.</p>
+                <div style="display: grid; gap: 15px;">
+                    <button type="button" class="ghost-button" id="btnCloudBackup" style="padding: 20px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">☁️</div>
+                        <strong>Cloud Storage Backup</strong>
+                    </button>
+                    <button type="button" class="ghost-button" id="btnLocalBackup" style="padding: 20px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">💾</div>
+                        <strong>Local Drive Backup</strong>
+                    </button>
+                </div>
+            </div>
+
+            <div id="cloudPanel" class="hidden">
+                <button type="button" class="ghost-button" id="backToSelection" style="margin-bottom: 15px; font-size: 0.8rem;">← Back</button>
+                <h4>Cloud Destination</h4>
+                <div class="field-grid" style="margin: 15px 0;">
+                    <select id="cloudProvider">
+                        <option value="">Select Provider</option>
+                        <option value="Google Drive">Google Drive</option>
+                        <option value="Microsoft OneDrive">Microsoft OneDrive</option>
+                        <option value="AWS S3">AWS S3</option>
+                    </select>
+                </div>
+                <input type="url" id="cloudLink" placeholder="Enter cloud storage destination link" style="margin-bottom: 15px;">
+
+                <div style="background: rgba(56, 189, 248, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="scheduleBackup" style="width: auto;">
+                        <span>Perform weekly backup every Saturday</span>
+                    </label>
+                    <div id="scheduleTimeRow" class="hidden" style="margin-top: 10px;">
+                        <label style="font-size: 0.8rem;">Select Time:</label>
+                        <input type="time" id="backupTime" value="00:00" style="width: 120px; padding: 5px;">
+                    </div>
+                </div>
+
+                <button type="button" id="startCloudBackup" class="hidden" style="background: var(--accent); color: var(--bg-deep);">Start Cloud Backup</button>
+            </div>
+
+            <div id="localPanel" class="hidden">
+                <button type="button" class="ghost-button" id="backToSelectionLocal" style="margin-bottom: 15px; font-size: 0.8rem;">← Back</button>
+                <h4>System Storage Interface</h4>
+                <div id="driveList" style="margin: 15px 0; display: grid; gap: 8px;">
+                    <!-- Drives populated by JS -->
+                </div>
+                <div id="driveStatus" class="alert info" style="margin: 15px 0;">Awaiting external hardware attachment...</div>
+                <button type="button" id="checkDrive">Scan Hardware Ports</button>
+                <button type="button" id="startLocalBackup" class="hidden" style="background: var(--accent); color: var(--bg-deep); margin-top: 10px;">Start Secure File Transfer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Backup Lockout -->
+    <div id="backupLockoutOverlay" class="modal hidden" style="z-index: 10000; background: rgba(0,0,0,0.95);">
+        <div class="modal-card" style="text-align: center; border: 2px solid var(--accent);">
+            <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
+            <h2>SYSTEM MAINTENANCE: BACKUP IN PROGRESS</h2>
+            <p style="color: var(--accent); margin-bottom: 30px;">All system functions are locked to ensure data integrity.</p>
+
+            <div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                <span id="backupPercentText">0% Completed</span>
+                <span id="transferRateText">0 MB/s</span>
+            </div>
+            <div style="width: 100%; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 20px;">
+                <div id="backupProgressBar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s linear;"></div>
+            </div>
+            <p id="backupSuccessMsg" class="hidden" style="color: var(--success); font-weight: bold; font-size: 1.2rem;">Backup Successful! System is now online.</p>
+        </div>
+    </div>
+
+    <!-- Professional Action Center -->
+    <div class="fab-container">
+        <div id="attendanceTrigger" class="action-trigger" title="Attendance Log">📅</div>
+        <div id="emailTrigger" class="action-trigger" title="Correspondence">✉️</div>
+    </div>
+
+    <!-- Attendance Modal Overlay -->
+    <div id="attendanceOverlay" class="modal hidden">
+        <div class="modal-card" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Attendance Calendar</h3>
+                <button type="button" class="ghost-button" id="closeAttendance">Close</button>
+            </div>
+            <div id="calendarHeader" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <button type="button" class="ghost-button" id="prevMonth">◀</button>
+                <h4 id="currentMonthYear">Month Year</h4>
+                <button type="button" class="ghost-button" id="nextMonth">▶</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar days injected by JS -->
+            </div>
+            <div id="dayActionPanel" class="hidden" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                <h4 id="selectedDateTitle" style="margin-bottom: 15px;">Date</h4>
+                <div class="action-row" id="initialAttendanceActions">
+                    <button type="button" id="markPresent">Present</button>
+                    <button type="button" class="danger-button" id="markLeave">On Leave</button>
+                </div>
+                <div id="leaveReasonPanel" class="hidden" style="margin-top: 15px;">
+                    <p style="margin-bottom: 10px; font-size: 0.85rem;">Select Leave Category:</p>
+                    <div style="display: grid; gap: 10px;">
+                        <button type="button" class="ghost-button" onclick="finalizeLeave('Medical Issue')">Medical Issue</button>
+                        <button type="button" class="ghost-button" onclick="finalizeLeave('Personal Issue')">Personal Issue</button>
+                        <button type="button" class="ghost-button" onclick="finalizeLeave('Normal Paid Leave')">Normal Paid Leave</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email System Overlay -->
+    <div id="emailOverlay" class="modal hidden">
+        <div class="email-window modal-card" style="max-width: 900px; height: 80vh; padding: 0;">
+            <header class="email-header" style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Corporate Correspondence</h3>
+                <button type="button" class="ghost-button" id="closeEmail">Close</button>
+            </header>
+            <div class="email-body" style="display: flex; flex: 1; overflow: hidden;">
+                <aside class="email-sidebar" style="width: 240px; border-right: 1px solid var(--border); padding: 20px; background: rgba(0, 0, 0, 0.1);">
+                    <h4 style="margin-bottom: 10px; font-size: 0.8rem; color: var(--accent);">FOLDERS</h4>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <button type="button" class="ghost-button" id="showInbox" style="text-align: left; justify-content: flex-start; width: 100%; padding: 8px 12px; font-size: 0.85rem;">📥 Inbox</button>
+                        <button type="button" class="ghost-button" id="showSent" style="text-align: left; justify-content: flex-start; width: 100%; padding: 8px 12px; font-size: 0.85rem;">📤 Sent Mail</button>
+                        <button type="button" class="ghost-button" id="showCompose" style="text-align: left; justify-content: flex-start; width: 100%; padding: 8px 12px; font-size: 0.85rem; margin-top: 10px; background: var(--accent); color: var(--bg-deep);">✏️ Compose new</button>
+                    </div>
+                    <div id="messagesList" class="stack-list" style="margin-top: 20px; overflow-y: auto; max-height: 50vh;"></div>
+                </aside>
+                <main class="email-main">
+                    <div id="emailComposeArea">
+                        <h4>New Correspondence</h4>
+                        <div class="field-grid">
+                            <select id="mailRecipient" aria-label="Select Recipient">
+                                <option value="">Recipient Selection</option>
+                            </select>
+                            <input type="text" id="mailSubject" placeholder="Reference Subject">
+                        </div>
+                        <textarea id="mailBody" placeholder="Message content..." style="min-height: 200px; margin-top: 10px;"></textarea>
+                        <button id="sendMailBtn" style="margin-top: 15px;">Dispatch Correspondence</button>
+                    </div>
+                    <div id="emailViewArea" class="hidden">
+                        <div id="emailViewContent" class="panel" style="background: var(--bg-deep); border: 1px solid var(--border);">
+                            <!-- Content populated by JS -->
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Security Modal (For Backup & Auth) -->
+    <div id="faceAuthModal" class="modal hidden">
+        <div class="modal-backdrop" data-action="close-modal" data-modal-id="faceAuthModal"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">Security Verification</p>
+                    <h3 id="faceAuthTitle">Biometric / PIN Access</h3>
+                </div>
+                <button type="button" class="ghost-button" data-action="close-modal" data-modal-id="faceAuthModal">Close</button>
+            </div>
+
+            <div id="securityTabs" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button type="button" class="ghost-button" id="tabFace" style="flex: 1; background: var(--accent); color: var(--bg-deep);">Face ID</button>
+                <button type="button" class="ghost-button" id="tabPin" style="flex: 1;">PIN Unlock</button>
+            </div>
+
+            <div id="facePanel">
+                <p class="helper-text">Align your face with the camera sensors below.</p>
+                <div class="camera-shell" style="margin: 15px 0;">
+                    <video id="faceVideo" class="camera-frame" autoplay playsinline muted></video>
+                    <canvas id="faceCanvas" class="hidden"></canvas>
+                </div>
+                <div id="faceStatus" class="alert info" style="margin-bottom: 15px;">Awaiting camera sync...</div>
+                <div class="action-row">
+                    <button type="button" id="startFaceCameraButton">Start Camera</button>
+                    <button type="button" id="captureFaceButton">Capture & Verify</button>
+                </div>
+            </div>
+
+            <div id="pinPanel" class="hidden">
+                <p class="helper-text">Enter your 4-digit security PIN to authorize access.</p>
+                <div style="margin: 20px 0; text-align: center;">
+                    <input type="password" id="loginPin" maxlength="4" placeholder="••••"
+                           style="width: 150px; font-size: 2rem; text-align: center; letter-spacing: 10px; padding: 10px;">
+                </div>
+                <button type="button" id="verifyPinButton">Verify PIN & Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationContainer"></div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

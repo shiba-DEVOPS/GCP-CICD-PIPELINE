@@ -1,0 +1,40 @@
+CREATE DATABASE IF NOT EXISTS `secure-web-apex`;
+USE `secure-web-apex`;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    role ENUM('employee', 'manager') NOT NULL DEFAULT 'employee',
+    department ENUM('IT', 'HR', 'SALES', 'SOFTWARE DEVELOPMENT', 'SOFTWARE TESTING', 'MARKETING') NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    job_title VARCHAR(120) DEFAULT NULL,
+    nationality VARCHAR(100) DEFAULT NULL,
+    salary DECIMAL(12,2) DEFAULT NULL,
+    age INT DEFAULT NULL,
+    blood_group VARCHAR(10) DEFAULT NULL,
+    mobile_number VARCHAR(20) DEFAULT NULL,
+    face_data LONGTEXT DEFAULT NULL,
+    face_image LONGTEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    subject VARCHAR(255) DEFAULT 'No Subject',
+    body TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

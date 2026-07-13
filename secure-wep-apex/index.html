@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Corporate portal for employee and manager account management.">
+    <title>Employee and Manager Entry</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="form-page">
+    <main class="card card-wide" id="entryCard">
+        <div class="card-header">
+            <div class="corporate-logo">
+                <div class="logo-icon">💠</div>
+                <span>Secure Apex</span>
+            </div>
+            <p class="eyebrow">Web Enterprise Portal</p>
+            <h1 id="entryTitle">System Authentication</h1>
+            <p class="subtext" id="entrySubtext">Unauthorized access is strictly prohibited. Please verify your credentials to initialize session.</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="entry-form" autocomplete="off">
+            <div class="field-grid">
+                <div>
+                    <label for="loginRole">Select Section</label>
+                    <select id="loginRole" name="corporate-role-selection" required>
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr">HR</option>
+                        <option value="ceo">CEO</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="loginEmail">Enter Your Email</label>
+                    <input type="email" id="loginEmail" name="auth-identity-field" placeholder="Enter email" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+            </div>
+            <div class="field-grid" style="margin-bottom: 20px;">
+                <div>
+                    <label for="loginPassword">Enter Your Password</label>
+                    <input type="password" id="loginPassword" name="auth-security-key" placeholder="Enter password" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="flex: 1;">Login</button>
+                <button type="button" id="universalResetBtn" class="ghost-button" style="flex: 1; border-color: var(--accent); color: var(--accent);">Reset Password</button>
+            </div>
+            <div class="helper-text" style="text-align:center; margin-top:20px;">
+                <p>Don't have an account? <a href="#" id="showSignup">Sign up here</a></p>
+            </div>
+        </form>
+
+        <!-- Signup Form (Hidden by default) -->
+        <form id="signupForm" class="entry-form hidden" autocomplete="off">
+            <div class="field-grid">
+                <div>
+                    <label for="signupRole">Select Section</label>
+                    <select id="signupRole" name="role" required>
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="hr">HR</option>
+                        <option value="ceo">CEO</option>
+                    </select>
+                </div>
+                <div id="signupDeptContainer">
+                    <label for="signupDept">Select Department</label>
+                    <select id="signupDept" name="department" required>
+                        <option value="">Choose Department</option>
+                        <option value="IT">IT</option>
+                        <option value="HR">HR</option>
+                        <option value="SALES">SALES</option>
+                        <option value="SOFTWARE DEVELOPMENT">SOFTWARE DEVELOPMENT</option>
+                        <option value="SOFTWARE TESTING">SOFTWARE TESTING</option>
+                        <option value="MARKETING">MARKETING</option>
+                        <option value="EXECUTIVE">EXECUTIVE BOARD</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-grid">
+                <div>
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" placeholder="First Name" required autocomplete="new-password">
+                </div>
+                <div>
+                    <label for="middleName">Middle Name</label>
+                    <input type="text" id="middleName" name="middleName" placeholder="Middle Name" autocomplete="new-password">
+                </div>
+                <div>
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" placeholder="Last Name" required autocomplete="new-password">
+                </div>
+            </div>
+            <div class="field-grid">
+                <div>
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" name="reg-identity" placeholder="Enter email" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+                <div>
+                    <label for="signupMobile">Mobile Number</label>
+                    <input type="text" id="signupMobile" name="reg-contact" placeholder="Mobile Number" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+            </div>
+            <div class="field-grid">
+                <div>
+                    <label for="signupPassword">Create Password</label>
+                    <input type="password" id="signupPassword" name="reg-key" placeholder="Create password" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+                <div>
+                    <label for="signupPin">Security PIN (4-Digits)</label>
+                    <input type="password" id="signupPin" name="reg-pin" placeholder="Enter PIN" maxlength="4" required
+                           autocomplete="one-time-code" readonly onfocus="this.removeAttribute('readonly');">
+                </div>
+            </div>
+            <button type="submit">Sign Up</button>
+            <p class="helper-text" style="text-align:center; margin-top:15px;">
+                Already have an account? <a href="#" id="showLogin">Log in here</a>
+            </p>
+        </form>
+    </main>
+
+    <!-- Enhanced Security Modal -->
+    <div id="faceAuthModal" class="modal hidden">
+        <div class="modal-backdrop" data-action="close-modal" data-modal-id="faceAuthModal"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">Security Verification</p>
+                    <h3 id="faceAuthTitle">Biometric / PIN Access</h3>
+                </div>
+                <button type="button" class="ghost-button" data-action="close-modal" data-modal-id="faceAuthModal">Close</button>
+            </div>
+
+            <div id="securityTabs" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button type="button" class="ghost-button" id="tabFace" style="flex: 1; background: var(--accent); color: var(--bg-deep);">Face ID</button>
+                <button type="button" class="ghost-button" id="tabPin" style="flex: 1;">PIN Unlock</button>
+            </div>
+
+            <div id="facePanel">
+                <p class="helper-text">Align your face with the camera sensors below.</p>
+                <div class="camera-shell" style="margin: 15px 0;">
+                    <video id="faceVideo" class="camera-frame" autoplay playsinline muted></video>
+                    <canvas id="faceCanvas" class="hidden"></canvas>
+                </div>
+                <div id="faceStatus" class="alert info" style="margin-bottom: 15px;">Awaiting camera sync...</div>
+                <div class="action-row">
+                    <button type="button" id="startFaceCameraButton">Start Camera</button>
+                    <button type="button" id="captureFaceButton">Capture & Verify</button>
+                </div>
+            </div>
+
+            <div id="pinPanel" class="hidden">
+                <p class="helper-text">Enter your 4-digit security PIN to authorize access.</p>
+                <div style="margin: 20px 0; text-align: center;">
+                    <input type="password" id="loginPin" maxlength="4" placeholder="••••"
+                           style="width: 150px; font-size: 2rem; text-align: center; letter-spacing: 10px; padding: 10px;">
+                </div>
+                <button type="button" id="verifyPinButton">Verify PIN & Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Password Reset Modal -->
+    <div id="passwordResetModal" class="modal hidden">
+        <div class="modal-card" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Set New Password</h3>
+                <button type="button" class="ghost-button" onclick="document.getElementById('passwordResetModal').classList.add('hidden')">Close</button>
+            </div>
+            <div class="entry-form" style="padding: 20px 0;">
+                <label for="newResetPassword">Enter New Password</label>
+                <input type="password" id="newResetPassword" placeholder="Enter new password" required style="margin-bottom: 20px;">
+                <button type="button" id="submitNewPassword" style="width: 100%;">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationContainer"></div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

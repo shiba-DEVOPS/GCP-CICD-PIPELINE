@@ -1,0 +1,50 @@
+# ==========================================
+# MONGODB DEPLOYMENT SECTION
+# ==========================================
+apiVersion: apps/v1 # Defines the Kubernetes API version for apps
+kind: Deployment # Specifies this is a Deployment resource for pods
+metadata: # Metadata for identifying the deployment
+  name: mongodb-deployment # Unique name for this database deployment
+spec: # Specification of the deployment's behavior
+  replicas: 1 # Number of database instances to maintain
+  selector: # Defines how to identify the pods it manages
+    matchLabels: # Uses labels for pod selection
+      app: mongodb # Selects pods with the label app=mongodb
+  template: # Blueprint for the pods to be created
+    metadata: # Metadata applied to the pods
+      labels: # Labels assigned to each pod
+        app: mongodb # Pod identification label
+    spec: # Specification of the pod's contents
+      containers: # List of containers to run in the pod
+      - name: mongodb # Name of the individual container
+        image: mongo:latest # The Docker image to pull and run
+        ports: # List of ports to expose on the container
+        - containerPort: 27017 # The default port MongoDB listens on
+        env: # Environment variables for container configuration
+        - name: MONGO_INITDB_ROOT_USERNAME # Variable for admin user
+          value: "admin" # Set the admin username
+        - name: MONGO_INITDB_ROOT_PASSWORD # Variable for admin pass
+          value: "password" # Set the admin password
+        volumeMounts: # Defines where to attach storage in the container
+        - name: mongodb-storage # Name of the volume to mount
+          mountPath: /data/db # Internal directory for MongoDB data
+      volumes: # List of volumes available to the pod
+      - name: mongodb-storage # Internal volume identifier
+        persistentVolumeClaim: # Links to a Persistent Volume Claim
+          claimName: mongodb-pvc # The name of the PVC to use
+---
+# ==========================================
+# MONGODB SERVICE SECTION
+# ==========================================
+apiVersion: v1 # Defines the Kubernetes API version for core resources
+kind: Service # Specifies this is a Service resource for networking
+metadata: # Metadata for identifying the service
+  name: mongodb-service # Unique name for the internal network access
+spec: # Specification of the service's behavior
+  selector: # Defines which pods should receive traffic
+    app: mongodb # Directs traffic to pods with label app=mongodb
+  ports: # List of ports the service will handle
+    - protocol: TCP # Specifies the network protocol
+      port: 27017 # Port exposed by the service to the cluster
+      targetPort: 27017 # Port on the container where traffic is sent
+  type: ClusterIP # Restricts access to within the cluster only

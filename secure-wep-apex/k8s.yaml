@@ -1,0 +1,85 @@
+# # ==========================================
+# APPLICATION DEPLOYMENT SECTION
+# ==========================================
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name: secure-web-apex 
+  labels: 
+    app: secure-apex 
+spec: 
+  # Removed hardcoded 'replicas' to let HPA handle scaling seamlessly
+  selector: 
+    matchLabels: 
+      app: secure-apex 
+  template: 
+    metadata: 
+      labels: 
+        app: secure-apex 
+    spec: 
+      containers: 
+      - name: secure-apex-portal 
+        # Kept the exact placeholders for dynamic replacement in the pipeline
+        image: asia-south1-docker.pkg.dev/${PROJECT_ID}/image-repo/my-container:${IMAGE_TAG} 
+        imagePullPolicy: Always
+        env: 
+        - name: DB_TYPE 
+          value: "mongodb" 
+        - name: DB_HOST 
+          value: "mongodb-service" 
+        - name: DB_PORT 
+          value: "27017" 
+        - name: DB_USER 
+          value: "admin" 
+        - name: DB_PASS 
+          value: "password" 
+        - name: DB_NAME 
+          value: "secure_apex" 
+        ports: 
+        - containerPort: 80 
+        resources: 
+          requests: 
+            cpu: "250m"       # Lowered to 0.25 core so pods schedule reliably
+            memory: "512Mi"   # Lowered to 512MB initial request
+          limits: 
+            cpu: "2"          # Kept high to allow bursting
+            memory: "2Gi"     # Kept high to handle spikes
+---
+# ==========================================
+# APPLICATION SERVICE SECTION
+# ==========================================
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: secure-apex-service 
+spec: 
+  selector: 
+    app: secure-apex 
+  ports: 
+    - name: http
+      protocol: TCP 
+      port: 80 
+      targetPort: 80 
+  type: LoadBalancer 
+---
+# ==========================================
+# HORIZONTAL POD AUTOSCALER (HPA) SECTION
+# ==========================================
+apiVersion: autoscaling/v2 
+kind: HorizontalPodAutoscaler 
+metadata: 
+  name: secure-apex-hpa 
+spec: 
+  scaleTargetRef: 
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: secure-web-apex 
+  minReplicas: 1 
+  maxReplicas: 3 # Increased slightly to allow scaling beyond minimum if CPU triggers
+  metrics: 
+  - type: Resource 
+    resource: 
+      name: cpu 
+      target: 
+        type: Utilization 
+        averageUtilization: 50

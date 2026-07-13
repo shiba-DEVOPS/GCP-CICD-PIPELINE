@@ -1,0 +1,63 @@
+name: secure-webapex.pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - id: auth
+        name: Authentication to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - name: Docker Auth
+        run: |
+          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://asia-south1-docker.pkg.dev
+
+      - name: Build and Push container
+        run: |
+          # Build using the subfolder path while keeping context at root '.'
+          docker build -f secure-wep-apex/Dockerfile \
+            -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/image-repo/my-container:${{ github.sha }} \
+            -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/image-repo/my-container:v1 .
+          docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/image-repo/my-container:${{ github.sha }}
+          docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/image-repo/my-container:v1
+
+      # CD PIPELINE
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          # Installs the missing authentication plugin required for kubectl
+          install_components: 'gke-gcloud-auth-plugin'
+        
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials cicd-cluster \
+            --location asia-south1 \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy to GKE
+        run: |
+          # Process the k8s template from the subfolder
+          sed -e "s|\${PROJECT_ID}|${{ secrets.GCP_PROJECT_ID }}|g" \
+              -e "s|\${IMAGE_TAG}|${{ github.sha }}|g" \
+              secure-wep-apex/k8s.yaml > k8s-deploy.yaml
+              
+          kubectl apply -f k8s-deploy.yaml
+          
+          # Tracks deployment rollout health using the exact deployment name
+          kubectl rollout status deployment/secure-web-apex --timeout=120s
